@@ -1,0 +1,17 @@
+{{- range $section := .Values.section }}
+{{- range .urls }}
+---
+apiVersion: console.openshift.io/v1
+kind: ConsoleLink
+metadata:
+  name: {{ .name }}
+spec:
+  applicationMenu:
+    imageURL: >-
+      {{ .image_url }}
+    section: {{ $section.name | quote }}
+  href: '{{ .url }}'
+  location: ApplicationMenu
+  text: {{ .text | quote }}
+{{- end }}
+{{- end }}

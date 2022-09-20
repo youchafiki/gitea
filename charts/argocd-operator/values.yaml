@@ -1,0 +1,102 @@
+---
+# control used by Labs Ubiquitous Journey
+enabled: true
+name: argocd
+
+# this is for argo type deployments (set to true) dont deploy helm hooked resources
+ignoreHelmHooks: false
+
+# use the RELEASENAME if you want otherwise set this when helm template
+# namespace: labs-ci-cd
+
+# operator manages upgrades etc
+operator:
+  version: argocd-operator.v0.1.0
+  channel: alpha
+  installPlanApproval: Automatic
+  name: argocd-operator
+  operatorgroup: true
+
+# role bindings, enable this to restrict to listed namespaces only. cluster role by default (enabled: false)
+namespaceRoleBinding:
+  enabled: false
+  namespaces:
+    - name: labs-ci-cd
+    - name: labs-dev"
+    - name: labs-test"
+    - name: labs-staging"
+
+# if using metrics, handy to deploy an instance of prometheus
+metrics:
+  enabled: false
+  prometheus:
+    version: prometheusoperator.0.47.0
+    channel: beta
+    name: prometheus-operator
+
+secrets:
+  - name: argocd-privaterepo
+    username: 'user'
+    password: 'pass1234'
+    sshPrivateKey: ''
+
+# https://argocd-operator.readthedocs.io/en/latest/reference/argocd/
+argocd_cr:
+  applicationInstanceLabelKey: rht-labs.com/uj1234
+  version: v2.1.5
+
+  statusBadgeEnabled: true
+  usersAnonymousEnabled: false
+  dex:
+    openShiftOAuth: true
+
+  grafana:
+    enabled: true
+    route:
+      enabled: true
+    size: 1
+  prometheus:
+    enabled: true
+    route:
+      enabled: true
+    size: 1
+  ha:
+    enabled: false
+    redisProxyImage: haproxy
+    redisProxyVersion: "2.0.4"
+
+  rbac:
+    defaultPolicy: role:admin
+
+  server:
+    route:
+      enabled: true
+      tls:
+        termination: passthrough
+        insecureEdgeTerminationPolicy: Redirect
+      wildcardPolicy: None
+    autoscale:
+      enabled: false
+    service:
+      type: ClusterIP
+
+  # See here for private repos
+  # https://argocd-operator.readthedocs.io/en/v0.0.8/reference/argocd/#initial-repositories-example
+  initialRepositories: |
+    - name: ubiquitous-journey
+      url: https://github.com/rht-labs/ubiquitous-journey.git
+    - name: redhat-cop
+      type: helm
+      url: https://redhat-cop.github.io/helm-charts
+
+  # configure your repo credential template
+  # example for ref only
+  repositoryCredentials: |
+    - url: https://gitlab-ce.apps.example.cluster.com
+      type: git
+      passwordSecret:
+        key: password
+        name: argocd-privaterepo
+      usernameSecret:
+        key: username
+        name: argocd-privaterepo

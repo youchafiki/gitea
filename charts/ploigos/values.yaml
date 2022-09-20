@@ -1,0 +1,9 @@
+# deploy a tssc platform to these namespaces
+operator:
+  namespaces:
+  - name: devsecops
+    version: ploigos-software-factory-operator.v0.2.7
+    channel: alpha
+    operatorname: ploigos-software-factory-operator
+    operatorgroup:
+      create: true

@@ -1,0 +1,15 @@
+# Default values for operatorhub.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+namespace: operator-namespace
+operators:
+  - name: subscription-name
+    subscription:
+      channel: operator-channel
+      approval: approval-type
+      operatorName: operator-name
+      sourceName: catalog-source
+      sourceNamespace: catalog-source-namespace
+    operatorgroup:
+      create: true

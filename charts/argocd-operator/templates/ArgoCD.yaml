@@ -1,0 +1,19 @@
+{{- if .Values.enabled }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ArgoCD
+metadata:
+  name: {{ .Values.name }}
+  labels:
+    app: {{ .Values.name }}
+  {{- if not .Values.ignoreHelmHooks }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "25"
+  {{- end }}
+  namespace: {{ include "argocd-operator.ns" . }}
+spec:
+  {{- if .Values.argocd_cr }}
+  {{- .Values.argocd_cr | toYaml | trim | nindent 2 }}
+  {{- end }}
+{{- end }}
